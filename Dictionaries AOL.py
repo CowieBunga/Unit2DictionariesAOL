@@ -1,7 +1,8 @@
 
 # Question 1 - Extreme Tuple
 
-# this function determines the min and max values and returns them, or if the list is blank, it returns a statement
+# this function determines the min and max values and returns them, or if the list is blank or only contains one value,
+# it returns a statement
 
 
 def extremeTuple(args):
@@ -41,7 +42,6 @@ with open('database', 'r') as database:
 
 for i in range(len(rows)):
         data[names[i]] = tuple(rows[i])
-print(data)
 
 ''' 
 changes the list into a dictionary by going through the name tuple above and making the name in each line the 
@@ -95,7 +95,6 @@ while True:  # allows user to continue searching
         break  # exits the program
     else:
         print("That name was not in the database. Try again")
-
 
 
 # Question 3 - One Hop
