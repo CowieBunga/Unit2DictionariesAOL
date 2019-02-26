@@ -2,6 +2,8 @@
 # Question 1 - Extreme Tuple
 
 # this function determines the min and max values and returns them, or if the list is blank, it returns a statement
+
+
 def extremeTuple(args):
     if len(args) > 1:  # if args has a length greater than 1, then the function will return max and min values
         maximum = max(args)
@@ -10,7 +12,9 @@ def extremeTuple(args):
     else:  # otherwise, it returns zero, which contains the string below
         zero = "Your tuple contained no arguments or was too short"
         return zero
-list1 = []
+
+
+list1 = []   # list has to be used here because tuples are immutable
 while True:  # loop allows the user to input multiple values
     nums = input("Input a number: ")
     if len(nums) > 0:  # it only appends to the list if a value was inputted (otherwise, the tuple's length will > 0)
@@ -23,8 +27,8 @@ results = extremeTuple(args)  # results is either max and min or zero depending 
 print(results)  # prints the correct returned value
 
 
-
 # Question 2 - Database
+
 
 import csv
 data = {}
@@ -123,14 +127,13 @@ city2 = input("Input second city: ").title()
 print(one_hop(flights, city1, city2))  # prints either true or false
 
 
-
-
 # Question 4 - Mind Reader
 
 '''
 the def below chooses the computer's guess depending on the last three inputs by the user. if there is less than three
 values, the comp will guess 2. the computer will choose 1 of 8 combinations depending on the last three guesses.
 '''
+
 
 def choose_guess(guesses):
     if len(guesses) < 3:
@@ -140,6 +143,7 @@ def choose_guess(guesses):
         combinations = {(1,1,1): 1, (1,1,2): 1, (1,2,2): 2, (2,2,2): 2, (2,1,1): 1, (2,2,1): 2, (2,1,2): 2, (1,2,1): 1}
         compguess = combinations[guesses]
     return compguess
+
 
 userpoints = 0
 comppoints = 0
