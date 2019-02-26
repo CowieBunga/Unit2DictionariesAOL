@@ -144,11 +144,10 @@ def choose_guess(guesses):
     return compguess
 
 
-userpoints = 0
-comppoints = 0
+points = {"Computer": 0, "User": 0}
 # scores for user and comp ^
 guesses = []
-while comppoints < 30 and userpoints < 30:  # loop runs until someone reaches 30 points.
+while points["Computer"] < 30 and points["User"] < 30:  # loop runs until someone reaches 30 points.
     guess = input("Input a number between 1 and 2 ")
     if guess == '1' or guess == '2':  # had to make it so the guesses were strings for defensive coding
         guesses.append(int(guess))  # makes the guess an integer when appended to the list
@@ -156,15 +155,15 @@ while comppoints < 30 and userpoints < 30:  # loop runs until someone reaches 30
             del guesses[0]  # deletes the least recent guess if the list is greater than length of 3
         if choose_guess(guesses) == int(guess):  # runs the function and checks if compguess is equal to userinput
             print("Computer got the point")
-            comppoints += 1  # adds point for the comp
+            points["Computer"] += 1  # adds point for the comp
         else:
             print("User got the point")
-            userpoints += 1  # adds point for the user
-        print("User score:", userpoints)
-        print("Computer Score:", comppoints)
+            points["User"] += 1  # adds point for the user
+        print("Computer score:", points["Computer"])
+        print("User Score:", points["User"])
         # prints out the score after each round
 
-if userpoints > comppoints:  # outputs certain message depending on who got the higher score
+if points["User"] > points["Computer"]:  # outputs certain message depending on who got the higher score
     print("You Won! Congrats!")
 else:
     print("You lost! The computer bested you.")
