@@ -89,5 +89,5 @@ CompSci.addStudent(Cowie)
 Business.addStudent(Gomes)
 Business.addStudent(Naprawa)
 
-
 print(Harvard)
+
