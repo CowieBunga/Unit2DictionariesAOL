@@ -26,7 +26,7 @@ class Animal:
 class Dog(Animal):
     def __init__(self, blood, age, weight, height, colour, hairOrFur):
         super().__init__(blood, age, weight, height)
-        self. colour = colour
+        self.colour = colour
         self.hairOrFur = hairOrFur
 
 
@@ -36,6 +36,6 @@ class Labrador(Dog):
         self.type = type
 
 
-poochie = Dog("warm", 3, 100, 20, "golden", "fur", "cute")
-print(poochie.type)
+poochie = Dog("warm", 3, 100, 20, "golden", "fur")
+print(poochie.blood)
 
