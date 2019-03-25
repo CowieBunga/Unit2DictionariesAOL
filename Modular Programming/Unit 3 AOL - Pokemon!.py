@@ -8,12 +8,12 @@ import random
 # how to make more efficient? - go into definition for everything but type moves.
 # rest, loose a turn?
 # quick attack always goes first
-# change damage depnding on speed
+# change damage depending on speed
 
 
-Bmoves = {"bulk up": range(15,30), "quick attack": range(10,20), "leaf storm": [range(30,40), range(20,30), range(10,20)], "rest": range(10,25)}
-Smoves = {"bulk up": range(15,30), "quick attack": range(10,20), "hydro pump": [range(30,40), range(20,30), range(10,20)], "rest": range(10,25)}
-Cmoves = {"bulk up": range(15,30), "quick attack": range(10,20), "flamethrower": [range(30,40), range(20,30), range(10,20)], "rest": range(10,25)}
+Bmoves = {"bulk up": range(1,3), "quick attack": range(10,20), "leaf storm": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
+Smoves = {"bulk up": range(1,3), "quick attack": range(10,20), "hydro pump": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
+Cmoves = {"bulk up": range(1,3), "quick attack": range(10,20), "flamethrower": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
 
 
 class Sprite:
@@ -34,29 +34,35 @@ class Charmander(Sprite):
     def attack(self, type, choice):
         while True:
             if choice == 'rest':
-                self.health += int(random.choice(Cmoves[choice]))
-                print("\nYour health is now", self.health)
+                r = int(random.choice(Cmoves[choice]))
+                self.health += r
+                print("\nHealth increased by", r)
                 break
             if choice == 'bulk up':
-                self.defense += int(random.randint(0,4))
-                print("\nYour defense is now", self.defense)
+                d = int(random.choice(Cmoves[choice]))
+                self.defense += d
+                print("\nDefense increased by", d)
                 break
             if choice == 'quick attack':  # how to ensure that they go first?
                 damage = int(random.choice(Cmoves[choice])) - type.defense
                 type.health -= damage
-                print("hi")
+                print("\nThe attack hit with", damage, "damage")
+
                 break
             if choice == 'flamethrower':  # keeps health at 100, doesn't go into any conditions syntax below doesn't work either
                 if isinstance(type, Bulbasaur):
+                    print("\nIt's Super Effective!")
                     damage = int(random.choice(Cmoves["flamethrower"][0])) - type.defense
                     type.health -= damage
                 if isinstance(type, Charmander):
+                    print("\nIt's neutrally effective")
                     damage = int(random.choice(Cmoves["flamethrower"][1])) - type.defense
                     type.health -= damage
                 if isinstance(type, Squirtle):
+                    print("\nIt's not very effective...")
                     damage = int(random.choice(Cmoves["flamethrower"][2])) - type.defense
                     type.health -= damage
-            #print("\nThe attack hit with", damage, "damage")
+                print("\nThe attack hit with", damage, "damage")
                 break
 
 
@@ -68,30 +74,37 @@ class Squirtle(Sprite):
 
     def attack(self, type, choice):
         while True:
+            damage = ''
             if choice == 'rest':
-                self.health += int(random.choice(Smoves[choice]))
-                print("\nYour health is now", self.health)
+                r = int(random.choice(Smoves[choice]))
+                self.health += r
+                print("\nHealth increased by", r)
                 break
             if choice == 'bulk up':
-                self.defense += int(random.randint(0,4))
-                print("\nYour defense is now", self.defense)  # make conditional
+                d = int(random.choice(Smoves[choice]))
+                self.defense += d
+                print("\nDefense increased by", d)
                 break
             if choice == 'quick attack':  # how to ensure that they go first?
                 damage = int(random.choice(Smoves[choice]))
                 type.health -= damage - type.defense
+                print("\nThe attack hit with", damage, "damage")
                 break
 
             if choice == 'hydro pump':
                 if isinstance(type, Bulbasaur):
-                    damage = int(random.choice(Bmoves["hydro pump"][2])) - type.defense
+                    print("\nIt's not very effective...")
+                    damage = int(random.choice(Smoves["hydro pump"][2])) - type.defense
                     type.health -= damage
                 if isinstance(type, Charmander):
-                    damage = int(random.choice(Bmoves["hydro pump"][0])) - type.defense
+                    print("\nIt's Super Effective!")
+                    damage = int(random.choice(Smoves["hydro pump"][0])) - type.defense
                     type.health -= damage
                 if isinstance(type, Squirtle):
-                    damage = int(random.choice(Bmoves["hydro pump"][1])) - type.defense
+                    print("\nIt's neutrally effective")
+                    damage = int(random.choice(Smoves["hydro pump"][1])) - type.defense
                     type.health -= damage
-                #print("\nThe attack hit with", damage, "damage")
+                print("\nThe attack hit with", damage, "damage")
                 break
 
 
@@ -103,32 +116,37 @@ class Bulbasaur(Sprite):
 
     def attack(self, type, choice):
         while True:
+            damage = ''
             if choice == 'rest':
-                self.health += int(random.choice(Bmoves[choice]))
-                print("\nYour health is now", self.health)
+                r = int(random.choice(Bmoves[choice]))
+                self.health += r
+                print("\nHealth increased by", r)
                 break
             if choice == 'bulk up':
-                self.defense += int(random.randint(0,4))  #  TypeError: choice() takes 2 positional arguments but 3 were given
-
-                print("\nYour defense is now", self.defense)
+                d = int(random.choice(Bmoves[choice]))
+                self.defense += d
+                print("\nDefense increased by", d)
                 break
             if choice == 'quick attack':  # how to ensure that they go first?
                 damage = int(random.choice(Bmoves[choice])) - type.defense
                 type.health -= damage
+                print("\nThe attack hit with", damage, "damage")
                 break
             if choice == 'leaf storm':
                 if isinstance(type, Bulbasaur):
+                    print("\nIt's neutrally effective")
                     damage = int(random.choice(Bmoves["leaf storm"][1])) - type.defense
                     type.health -= damage
                 if isinstance(type, Charmander):
+                    print("\nIt's not very effective...")
                     damage = int(random.choice(Bmoves["leaf storm"][2])) - type.defense
                     type.health -= damage
                 if isinstance(type, Squirtle):
+                    print("\nIt's Super Effective!")
                     damage = int(random.choice(Bmoves["leaf storm"][0])) - type.defense
                     type.health -= damage
+                print("\nThe attack hit with", damage, "damage")
                 break
-
-                # print("\nThe attack hit with", damage, "damage") # unbound local variable error
 
 
 
@@ -160,7 +178,7 @@ def enemyMove(pokemon, enemy):
         choice = random.choice(list(Smoves))
     if isinstance(enemy, Bulbasaur):
         choice = random.choice(list(Bmoves))
-    print(choice)
+    print("\nYoungster Joey used", choice, "!")
     enemy.attack(pokemon, choice)
 
 
@@ -190,23 +208,32 @@ def battle(pokemon, enemy):
             pokemonMove(pokemon, enemy)
             if enemy.health <= 0:
                 break
-            print("\nThe health of Youngster Joey is now", enemy.health)
+            print("\nUser:\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
+            print("\nYoungster Joey:\nHealth:", enemy.health, "\nDefense:", enemy.defense)
 
-            enemyMove(pokemon, enemy)
+            while True:
+                i = input("\nType 'ok' to continue ").lower()
+                if i == 'ok':
+                    enemyMove(pokemon, enemy)
+                    break
+
             if pokemon.health <= 0:
                 break
-            print("\nYour health is now", pokemon.health)
+            print("\nUser:\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
+            print("\nYoungster Joey\nHealth:", enemy.health, "\nDefense:", enemy.defense)
 
         else:
             enemyMove(pokemon, enemy)
             if pokemon.health <= 0:
                 break
-            print("\nYour health is now", pokemon.health)
+            print("\nUser\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
+            print("\nYoungster Joey\nHealth:", enemy.health, "\nDefense:", enemy.defense)
 
             pokemonMove(pokemon, enemy)
             if enemy.health <= 0:
                 break
-            print("\nThe health of Youngster Joey is now", enemy.health)
+            print("\nUser\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
+            print("\nYoungster Joey\nHealth:", enemy.health, "\nDefense:", enemy.defense)
 
     # outcome
     if pokemon.health > 0:
