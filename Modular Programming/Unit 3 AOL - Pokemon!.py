@@ -7,13 +7,12 @@ import random
 # WHY DOES PROGRAM RANDOMLY STOP????? - main error
 # how to make more efficient? - go into definition for everything but type moves.
 # rest, loose a turn?
-# quick attack always goes first
-# change damage depending on speed
+#health can't go over 100
 
-
-Bmoves = {"bulk up": range(1,3), "quick attack": range(10,20), "leaf storm": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
-Smoves = {"bulk up": range(1,3), "quick attack": range(10,20), "hydro pump": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
-Cmoves = {"bulk up": range(1,3), "quick attack": range(10,20), "flamethrower": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
+# damage of 'type' moves is dependent on speed (lower speed, more damage)
+Bmoves = {"bulk up": range(1,3), "tackle": range(20,25), "leaf storm": [range(35,40), range(25,30), range(15,20)], "rest": range(5,10)}
+Smoves = {"bulk up": range(1,3), "tackle": range(20,25), "hydro pump": [range(30,35), range(20,25), range(10,15)], "rest": range(5,10)}
+Cmoves = {"bulk up": range(1,3), "tackle": range(20,25), "flamethrower": [range(30,40), range(20,30), range(10,20)], "rest": range(5,10)}
 
 
 class Sprite:
@@ -35,34 +34,43 @@ class Charmander(Sprite):
         while True:
             if choice == 'rest':
                 r = int(random.choice(Cmoves[choice]))
-                self.health += r
-                print("\nHealth increased by", r)
+                if self.health + r < 100:
+                    self.health += r
+                    print("\nHealth increased by", r)
+                else:
+                    self.health = 100
+                    print("\nHealth is maxed")
                 break
             if choice == 'bulk up':
                 d = int(random.choice(Cmoves[choice]))
                 self.defense += d
                 print("\nDefense increased by", d)
                 break
-            if choice == 'quick attack':  # how to ensure that they go first?
-                damage = int(random.choice(Cmoves[choice])) - type.defense
-                type.health -= damage
-                print("\nThe attack hit with", damage, "damage")
+            if choice == 'tackle':  # how to ensure that they go first?
+                damage = int(random.choice(Cmoves[choice]))
+                type.health -= damage - type.defense
+                net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
 
                 break
             if choice == 'flamethrower':  # keeps health at 100, doesn't go into any conditions syntax below doesn't work either
                 if isinstance(type, Bulbasaur):
                     print("\nIt's Super Effective!")
-                    damage = int(random.choice(Cmoves["flamethrower"][0])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Cmoves["flamethrower"][0]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
+
                 if isinstance(type, Charmander):
                     print("\nIt's neutrally effective")
-                    damage = int(random.choice(Cmoves["flamethrower"][1])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Cmoves["flamethrower"][1]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
                 if isinstance(type, Squirtle):
                     print("\nIt's not very effective...")
-                    damage = int(random.choice(Cmoves["flamethrower"][2])) - type.defense
-                    type.health -= damage
-                print("\nThe attack hit with", damage, "damage")
+                    damage = int(random.choice(Cmoves["flamethrower"][2]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
                 break
 
 
@@ -77,34 +85,43 @@ class Squirtle(Sprite):
             damage = ''
             if choice == 'rest':
                 r = int(random.choice(Smoves[choice]))
-                self.health += r
-                print("\nHealth increased by", r)
+                if self.health + r < 100:
+                    self.health += r
+                    print("\nHealth increased by", r)
+                else:
+                    self.health = 100
+                    print("\nHealth is maxed")
                 break
             if choice == 'bulk up':
                 d = int(random.choice(Smoves[choice]))
                 self.defense += d
                 print("\nDefense increased by", d)
                 break
-            if choice == 'quick attack':  # how to ensure that they go first?
+            if choice == 'tackle':  # how to ensure that they go first?
                 damage = int(random.choice(Smoves[choice]))
                 type.health -= damage - type.defense
-                print("\nThe attack hit with", damage, "damage")
+                net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
                 break
 
             if choice == 'hydro pump':
                 if isinstance(type, Bulbasaur):
                     print("\nIt's not very effective...")
-                    damage = int(random.choice(Smoves["hydro pump"][2])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Smoves["hydro pump"][2]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
+
                 if isinstance(type, Charmander):
                     print("\nIt's Super Effective!")
-                    damage = int(random.choice(Smoves["hydro pump"][0])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Smoves["hydro pump"][0]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
                 if isinstance(type, Squirtle):
                     print("\nIt's neutrally effective")
-                    damage = int(random.choice(Smoves["hydro pump"][1])) - type.defense
-                    type.health -= damage
-                print("\nThe attack hit with", damage, "damage")
+                    damage = int(random.choice(Smoves["hydro pump"][1]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
                 break
 
 
@@ -119,33 +136,42 @@ class Bulbasaur(Sprite):
             damage = ''
             if choice == 'rest':
                 r = int(random.choice(Bmoves[choice]))
-                self.health += r
-                print("\nHealth increased by", r)
+                if self.health + r < 100:
+                    self.health += r
+                    print("\nHealth increased by", r)
+                else:
+                    self.health = 100
+                    print("\nHealth is maxed")
                 break
+
             if choice == 'bulk up':
                 d = int(random.choice(Bmoves[choice]))
                 self.defense += d
                 print("\nDefense increased by", d)
                 break
-            if choice == 'quick attack':  # how to ensure that they go first?
-                damage = int(random.choice(Bmoves[choice])) - type.defense
-                type.health -= damage
-                print("\nThe attack hit with", damage, "damage")
+            if choice == 'tackle':  # how to ensure that they go first?
+                damage = int(random.choice(Bmoves[choice]))
+                type.health -= damage - type.defense
+                net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
                 break
             if choice == 'leaf storm':
                 if isinstance(type, Bulbasaur):
                     print("\nIt's neutrally effective")
-                    damage = int(random.choice(Bmoves["leaf storm"][1])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Bmoves["leaf storm"][1]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
                 if isinstance(type, Charmander):
                     print("\nIt's not very effective...")
-                    damage = int(random.choice(Bmoves["leaf storm"][2])) - type.defense
-                    type.health -= damage
+                    damage = int(random.choice(Bmoves["leaf storm"][2]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
                 if isinstance(type, Squirtle):
                     print("\nIt's Super Effective!")
-                    damage = int(random.choice(Bmoves["leaf storm"][0])) - type.defense
-                    type.health -= damage
-                print("\nThe attack hit with", damage, "damage")
+                    damage = int(random.choice(Bmoves["leaf storm"][0]))
+                    type.health -= damage - type.defense
+                    net = damage - type.defense
+                print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
                 break
 
 
@@ -153,17 +179,17 @@ class Bulbasaur(Sprite):
 
 
 def pokemonMove(pokemon, enemy):
-    # gives me error for code below: UnboundLocalError: local variable 'choice' referenced before assignment
+
     while True:
         choice = ''
         if isinstance(pokemon, Charmander):
-            choice = input("\nPlease select a move (bulk up, quick attack, flamethrower, or rest) ").lower()
+            choice = input("\nPlease select a move (bulk up, tackle, flamethrower, or rest) ").lower()
         if isinstance(pokemon, Squirtle):
-            choice = input("\nPlease select a move (bulk up, quick attack, hydro pump, or rest) ").lower()
+            choice = input("\nPlease select a move (bulk up, tackle, hydro pump, or rest) ").lower()
         if isinstance(pokemon, Bulbasaur):
-            choice = input("\nPlease select a move (bulk up, quick attack, leaf storm, or rest) ").lower()
-        if choice == 'bulk up' or choice == 'quick attack' or choice == 'hydro pump' or choice == 'rest' or choice == \
-                'leaf storm' or choice == 'flamethrower':
+            choice = input("\nPlease select a move (bulk up, tackle, leaf storm, or rest) ").lower()
+        if choice == 'bulk up' or choice == 'tackle' or choice == 'hydro pump' or choice == \
+                'leaf storm' or choice == 'flamethrower' or choice == 'rest':
             pokemon.attack(enemy, choice)
             break
         else:
@@ -178,7 +204,7 @@ def enemyMove(pokemon, enemy):
         choice = random.choice(list(Smoves))
     if isinstance(enemy, Bulbasaur):
         choice = random.choice(list(Bmoves))
-    print("\nYoungster Joey used", choice, "!")
+    print("\nYoungster Joey used {0}!".format(choice))
     enemy.attack(pokemon, choice)
 
 
@@ -210,13 +236,7 @@ def battle(pokemon, enemy):
                 break
             print("\nUser:\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
             print("\nYoungster Joey:\nHealth:", enemy.health, "\nDefense:", enemy.defense)
-
-            while True:
-                i = input("\nType 'ok' to continue ").lower()
-                if i == 'ok':
-                    enemyMove(pokemon, enemy)
-                    break
-
+            enemyMove(pokemon, enemy)
             if pokemon.health <= 0:
                 break
             print("\nUser:\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
