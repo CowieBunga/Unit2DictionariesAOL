@@ -238,14 +238,22 @@ def battle(pokemon, enemy):
     # outcome
     if pokemon.health > 0:
         print("\nCongrats, you defeated Youngster Joey! You earned 100 gold and 20 exp points.")
+
     if enemy.health > 0:
         print("\nBooooooo. You lost :(")
 
+    again = input("\nPlay again? (y for yes) ").lower()
+    if again != 'y':
+        print("\nThank you for playing pokemon!!!")
+        exit()
 
 # code begins here
+
+
 starters = ["Charmander", "Squirtle", "Bulbasaur"]
 enemy = random.choice(starters)
-while True:
+x=0
+while x == 0:
     pokemon = str(input("\nPlease choose your pokemon (Charmander, Bulbasaur, or Squirtle) ")).title()
     if pokemon == 'Charmander':
         battle(pokemon, enemy)
