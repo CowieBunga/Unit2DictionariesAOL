@@ -1,13 +1,13 @@
 
 # make interface and battle system first, then make different pokemon and type advantages; if time make animations
 import random
+import pygame
 
 
-# WHY DOES HEALTH INCREASE????
-# WHY DOES PROGRAM RANDOMLY STOP????? - main error
-# how to make more efficient? - go into definition for everything but type moves.
-# rest, loose a turn?
-#health can't go over 100
+# why pokemon changing?
+# to make more efficient?
+# how to ensure health bar works?
+# moving spots?
 
 # damage of 'type' moves is dependent on speed (lower speed, more damage)
 
@@ -35,6 +35,93 @@ class Sprite:
         net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net,
               "damage")
+
+
+    def draw_health(self, type):
+        background = pygame.image.load('background2.png')
+        background = pygame.transform.scale(background, (900, 400))
+        MAX_HEALTH = 100
+        #p= pygame.Surface
+        #e = pygame.Surface
+
+        if isinstance(type, Bulbasaur):
+            e = pygame.image.load('venusaur.png')
+            e = pygame.transform.scale(e, (200, 200))
+        if isinstance(type, Charmander):
+            e = pygame.image.load('charizard.bmp.png')
+            e = pygame.transform.scale(e, (200, 200))
+        if isinstance(type, Squirtle):
+            e = pygame.image.load('blastoise.png')
+            e = pygame.transform.scale(e, (200, 200))
+
+        if isinstance(self, Bulbasaur):
+            p = pygame.image.load('venusaur.png')
+            p = pygame.transform.scale(p, (300, 300))
+        if isinstance(self, Charmander):
+            p = pygame.image.load('charizard.bmp.png')
+            p = pygame.transform.scale(p, (300, 300))
+        if isinstance(self, Squirtle):
+            p = pygame.image.load('blastoise.png')
+            p = pygame.transform.scale(p, (300, 300))
+
+
+        screen = pygame.display.set_mode((900, 400))
+        pygame.display.set_caption("Pokemon!")
+
+        done = False
+        while not done:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+
+            if self.health > 66:
+                color = (0, 255, 0)
+            elif self.health > 33:
+                color = (255,255,0)  # yellow???
+            else:
+                color = (255, 0, 0)
+
+            if type.health > 66:
+                color2 = (0, 255, 0)
+            elif type.health > 33:
+                color2 = (255,255,0)  # yellow???
+            else:
+                color2 = (255, 0, 0)
+
+            black = (0,0,0)
+
+            width = int(100 * self.health / MAX_HEALTH)
+            health_bar = pygame.Rect(150, 60, width, 7)
+            border = pygame.Rect(140, 56, 120, 17)
+
+            width2 = int(100 * type.health / MAX_HEALTH)
+            health_bar2 = pygame.Rect(700, 300, width2, 7)
+            border2 = pygame.Rect(690, 296, 120, 17)
+
+
+            if self.health <= MAX_HEALTH:
+                pygame.draw.rect(background, black, border)
+                pygame.draw.rect(background, color, health_bar)
+                pygame.display.update()
+
+            if type.health <= MAX_HEALTH:
+                pygame.draw.rect(background, black, border2)
+                pygame.draw.rect(background, color, health_bar2)
+                pygame.display.update()
+
+
+            screen.blit(background, (10, 10))
+            screen.blit(p, (100, 100))
+            screen.blit(e, (600, 60))
+            #screen.blit(venusaur, (600, 60))
+
+            #100,100; 600, 60
+
+            pygame.display.flip()
+            # Make the most recently drawn screen visible.
+        pygame.quit()
+
+
 
 
 class Charmander(Sprite):
@@ -142,6 +229,7 @@ def pokemonMove(pokemon, enemy):
         else:
             print("That's not a move...")
             continue
+        pokemon.draw_health(enemy)
         break
 
 
@@ -170,6 +258,7 @@ def enemyMove(pokemon, enemy):
         enemy.hydroPump(pokemon)
     if choice == 'leaf storm':
         enemy.leafStorm(pokemon)
+    pokemon.draw_health(pokemon)
 
 
 def chooserPokemon(pokemon):
@@ -199,7 +288,6 @@ def battle(pokemon, enemy):
     print("\nYoungster Joey challenges you! His pokemon is", enemy)
     pokemon = chooserPokemon(pokemon)
     enemy = chooserEnemy(enemy)
-
     while pokemon.health > 0 and enemy.health > 0:
 
         if pokemon.speed >= enemy.speed:
@@ -235,10 +323,11 @@ def battle(pokemon, enemy):
         print("\nThank you for playing pokemon!!!")
         exit()
 
-# code begins here
 
+# code begins here
 starters = ["Charmander", "Squirtle", "Bulbasaur"]
 enemy = random.choice(starters)
+
 while True:
     pokemon = str(input("\nPlease choose your pokemon (Charmander, Bulbasaur, or Squirtle) ")).title()
     if pokemon == 'Charmander' or pokemon == 'Bulbasaur'or pokemon == 'Squirtle':
