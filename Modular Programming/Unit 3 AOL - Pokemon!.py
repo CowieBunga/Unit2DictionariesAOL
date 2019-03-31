@@ -1,3 +1,7 @@
+# exit error
+# way to print object as string
+
+# IMPORTANT NOTE: THIS GAME IS INTENDED TO BE PLAYED FULL SCREEN
 import random
 import pygame
 '''
@@ -45,26 +49,38 @@ class Sprite:
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net,
               "damage")  # gives a detailed description of the move
     '''
-    this method is what forms the animation in the game. first, the background is formed and a caption is set.
-    then, depending on if it is an enemy or the user, health and health bars are made. after that, everything is
-    drawn onto the board. in the sub classes, the pokemon images are formed and scaled depending on if it is an
-    enemy or user.
+    this method is what forms the animation in the game. first, music is loaded and played, then 
+    the background is formed and a caption is set.
+    Depending on if it is an enemy or the user, certain health and health bars are made. after that, everything is
+    drawn onto the board. in the specific pokemon classes, the pokemon images are formed and scaled depending on if it 
+    is an enemy or user.
     '''
-    def draw_health(self, type):
+    def animations(self, type):
+        # LOAD AND PLAY MUSIC only for the user because music gets repetitive and annoying
+        if type.isEnemy:
+            pygame.mixer.pre_init(44100,16,2,4096)  # standard parameters for music
+            pygame.init()
+            pygame.mixer.music.load('107-battle (vs wild pokemon).mp3')
+            pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.play(-1)  # loop forever
+
+        # LOAD AND SCALE BACKGROUND
         background = pygame.image.load('background2.png')
         background = pygame.transform.scale(background, (900, 400))
-        # load and scale background ^^
+
+        # CAPTION AND MAIN SCREEN
         screen = pygame.display.set_mode((900, 400))
         pygame.display.set_caption("Pokemon!")
+
+        # FONT
         pygame.font.init()
         h = pygame.font.SysFont('Comic Sans MS', 30)
 
-        maxhp = 100  # this is needed for forming in the health bars
+        maxhp = 100  # this is needed for forming the health bars
 
-        if type.isEnemy:
-            playerHealth = h.render("Health: " + str(type.health), False, (0, 0, 0))  # how to display health?
+        if type.isEnemy:  # goes into this for user. all sizes and positions below are relative to the user
+            playerHealth = h.render("Health: " + str(type.health), False, (0, 0, 0))
             enemyHealth = h.render("Health: " + str(self.health), False, (0, 0, 0))
-            # when is the enemy,
 
             width = int(self.health)  # width of health bar is relative to that of how much health there is
             health_bar = pygame.Rect(150, 60, width, 7)
@@ -75,7 +91,7 @@ class Sprite:
             health_bar2 = pygame.Rect(700, 300, width2, 7)
             border2 = pygame.Rect(690, 296, 120, 17)
 
-            # the code above had to be duplicated for when the user comes into this method because the health
+            # the code above had to be duplicated for when the enemy comes into this method because the health
             # bar positions and the actual health values need to be in the same spot every time.
 
         else:
@@ -114,9 +130,9 @@ class Sprite:
             screen.blit(background, (0, 0))  # want the background to be centered
 
             if type.isEnemy:  # the code below puts the pokemon onto the screen. this needs to be done in a different
-                # condition because the background needs to be put on first.
-                screen.blit(self.picture, (100, 100))
-                screen.blit(type.picture, (600, 60))
+                # condition than above because the background needs to be put on first.
+                screen.blit(self.picture, (100, 100))  # user location
+                screen.blit(type.picture, (600, 60))  # enemy location
             else:
                 screen.blit(type.picture, (100, 100))
                 screen.blit(self.picture, (600, 60))
@@ -285,7 +301,7 @@ def pokemonMove(pokemon, enemy):
             print("That's not a move...")
             continue  # prevents the loop from breaking
         if enemy.health > 0:  # only shows the animation if the enemy is still 'alive'
-            pokemon.draw_health(enemy)
+            pokemon.animations(enemy)
         break
 
 
@@ -347,7 +363,7 @@ def enemyMove(pokemon, enemy):
     if choice == 'leaf storm':
         enemy.leafStorm(pokemon)
     if pokemon.health > 0:
-        enemy.draw_health(pokemon)
+        enemy.animations(pokemon)
 
 '''
 the following two functions turn the strings of pokemon and enemy into iterable class names. the last
@@ -427,7 +443,7 @@ def battle(pokemon, enemy):
     again = input("\nPlay again? (y for yes) ").lower()
     if again != 'y':
         print("\nThank you for playing pokemon!!!")
-        exit()  # exits the program
+        exit()  # exits the program ERROR?
     # otherwise, the loop below will continue running
 
 '''
