@@ -1,22 +1,32 @@
-
-# make interface and battle system first, then make different pokemon and type advantages; if time make animations
 import random
 import pygame
-
-# intelligent computer guessing
-
-# damage of 'type' moves is dependent on speed (lower speed, more damage)
-
+'''
+#######################################################
+####################---Classes---######################
+#######################################################
+'''
+'''
+this is the main class that all the other classes inherit. It includes all the moves that each pokemon has except for 
+the type moves.
+'''
 class Sprite:
+    '''
+    this initializing only includes attributes that remain the same throughout the other classes
+    '''
     def __init__(self, health, isEnemy):
         self.health = health
         self.isEnemy = isEnemy
-
+    '''
+    this method increases the defense of either the enemy or the user.
+    '''
     def bulkUp(self):
         d = int(random.randint(1,3))
         self.defense += d
         print("\nDefense increased by", d)
 
+    '''
+    only increases health if total health will be less 100. otherwise, it will just max health.
+    '''
     def rest(self):
         r = random.randint(3,7)
         if self.health + r < 100:
@@ -25,97 +35,126 @@ class Sprite:
         else:
             self.health = 100
             print("\nHealth is maxed")
-
+    '''
+    health of the type(either enemy or user) is deducted by damage, less whatever defense value that pokemon has
+    '''
     def tackle(self, type):
         damage = random.randint(20,25)
         type.health -= damage - type.defense
         net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net,
-              "damage")
-
+              "damage")  # gives a detailed description of the move
+    '''
+    this method is what forms the animation in the game. first, the background is formed and a caption is set.
+    then, depending on if it is an enemy or the user, health and health bars are made. after that, everything is
+    drawn onto the board. in the sub classes, the pokemon images are formed and scaled depending on if it is an
+    enemy or user.
+    '''
     def draw_health(self, type):
         background = pygame.image.load('background2.png')
         background = pygame.transform.scale(background, (900, 400))
+        # load and scale background ^^
         screen = pygame.display.set_mode((900, 400))
         pygame.display.set_caption("Pokemon!")
         pygame.font.init()
         h = pygame.font.SysFont('Comic Sans MS', 30)
 
-        maxhp = 100
+        maxhp = 100  # this is needed for forming in the health bars
 
         if type.isEnemy:
             playerHealth = h.render("Health: " + str(type.health), False, (0, 0, 0))  # how to display health?
             enemyHealth = h.render("Health: " + str(self.health), False, (0, 0, 0))
+            # when is the enemy,
 
-            width = int(100 * self.health / maxhp)
+            width = int(self.health)  # width of health bar is relative to that of how much health there is
             health_bar = pygame.Rect(150, 60, width, 7)
             border = pygame.Rect(140, 56, 120, 17)
+            # the numbers set the size and position
 
-            width2 = int(100 * type.health / maxhp)
+            width2 = int(type.health)
             health_bar2 = pygame.Rect(700, 300, width2, 7)
             border2 = pygame.Rect(690, 296, 120, 17)
 
+            # the code above had to be duplicated for when the user comes into this method because the health
+            # bar positions and the actual health values need to be in the same spot every time.
+
         else:
+            # does the same thing as code above, just flipped for the user.
             playerHealth = h.render("Health: " + str(self.health), False, (0, 0, 0))
             enemyHealth = h.render("Health: " + str(type.health), False, (0, 0, 0))
 
             width = int(100 * type.health / maxhp)
             health_bar = pygame.Rect(150, 60, width, 7)
             border = pygame.Rect(140, 56, 120, 17)
+            # enemy health located in the same spot ^
 
             width2 = int(100 * self.health / maxhp)
             health_bar2 = pygame.Rect(700, 300, width2, 7)
             border2 = pygame.Rect(690, 296, 120, 17)
+            # user health located in the same spot
 
         done = False
         while not done:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+                if event.type == pygame.QUIT:  # when the window is exited, pygame successfully closes
                     done = True
-            black = (0,0,0)
-            green = (50,205,50)  # didn't want to get super reptitive with changing colours
-            if self.health <= maxhp:
-                pygame.draw.rect(background, black, border)
-                pygame.draw.rect(background, green, health_bar)
-                pygame.display.update()
 
-            if type.health <= maxhp:
-                pygame.draw.rect(background, black, border2)
-                pygame.draw.rect(background, green, health_bar2)
-                pygame.display.update()
+            black = (0,0,0)  # used for health bar border
+            green = (50,205,50)
+            # I decided to just use green as the health bar colour because in order to implement changing colours, I
+            # would have to be super repetitive.
 
-            screen.blit(background, (0, 0))
+            pygame.draw.rect(background, black, border)
+            pygame.draw.rect(background, green, health_bar)
+            pygame.draw.rect(background, black, border2)
+            pygame.draw.rect(background, green, health_bar2)
+            # code above actually draws it on the board.
+            pygame.display.update()
 
-            if type.isEnemy:
+            screen.blit(background, (0, 0))  # want the background to be centered
+
+            if type.isEnemy:  # the code below puts the pokemon onto the screen. this needs to be done in a different
+                # condition because the background needs to be put on first.
                 screen.blit(self.picture, (100, 100))
                 screen.blit(type.picture, (600, 60))
-
             else:
-                screen.blit(type.picture, (100, 100)) # position
+                screen.blit(type.picture, (100, 100))
                 screen.blit(self.picture, (600, 60))
 
             screen.blit(playerHealth, (600, 350))
             screen.blit(enemyHealth, (50, 20))
+            #  finally, the healths are put on the board with the appropriate dimentions
 
-            pygame.display.flip()
-                # Make the most recently drawn screen visible.
-        pygame.quit()
-
-
+            pygame.display.flip()  # Make the most recently drawn screen visible.
+        pygame.quit()  # needed syntax for a smooth shut down
+'''
+this class inherits the Sprite class, so it receives all of the methods above. the only thing unique about all
+the rest of the classes are the type moves (flamethrower, leaf storm, and hydro pump). note that I won't be
+giving block or line comments for the rest of the classes because they are virtually the same, just with different
+moves.
+'''
 class Charizard(Sprite):
-    def __init__(self, health=100, defense=5, speed=20, isEnemy=True):
-        super().__init__(health, isEnemy)
+    def __init__(self, health=100, defense=5, speed=20, isEnemy=True):  # efficient programming to gives these
+        # attributes values here. isEnemy = True is default, but it is false if the user enters the class
+        super().__init__(health, isEnemy)  # inherited
         self.defense = defense
         self.speed = speed
-        self.picture = pygame.image.load('charizard.bmp.png')
-        self.description = "\nCharizard is the second and the second bulkiest pokemon" \
+        self.picture = pygame.image.load('charizard.bmp.png')  # loads image
+        self.description = "\nCharizard is the second fastest and the second bulkiest pokemon" \
                            "\nFlamethrower does the second most damage of all the type-moves"
+        # description above displays after the user chooses pokemon.
 
+        # conditional statement below scales picture depending on if it an enemy or user
         if self.isEnemy:
             self.picture = pygame.transform.scale(self.picture, (200, 200))
         else:
             self.picture = pygame.transform.scale(self.picture, (300, 300))
 
+    '''
+    this method is the same in all the rest of the classes. the only things that change are the effectiveness
+    of the move depending on which pokemon it is attacking. damage if different for each pokemon to balance
+    the playing field. the damage system here works the same as it does in the tackle method.
+    '''
     def flamethrower(self, type):
         damage = ''
         if isinstance(type, Venusaur):
@@ -134,8 +173,11 @@ class Charizard(Sprite):
             type.health -= damage - type.defense
             net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
+        # nice statement outlining gross damage, defense and net damage
 
-
+'''
+same function as above, just with a differnt move and pokemon.
+'''
 class Blastoise(Sprite):
     def __init__(self, health=100, defense=4, speed=30, isEnemy=True):
         super().__init__(health, isEnemy)
@@ -170,7 +212,9 @@ class Blastoise(Sprite):
             net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
 
-
+'''
+again, virtually the same as before. 
+'''
 class Venusaur(Sprite):
     def __init__(self, health=100, defense=6, speed=10, isEnemy=True):
         super().__init__(health, isEnemy)
@@ -184,7 +228,6 @@ class Venusaur(Sprite):
             self.picture = pygame.transform.scale(self.picture, (200, 200))
         else:
             self.picture = pygame.transform.scale(self.picture, (300, 300))
-
 
     def leafStorm(self, type):
         damage = ''
@@ -205,12 +248,18 @@ class Venusaur(Sprite):
             net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
 
-
+'''
+#######################################################
+####################---Functions---####################
+#######################################################
+'''
+'''
+this function asks the user to choose a move depending on what pokemon they have, then goes into that specific class
+and performs the move.
+'''
 def pokemonMove(pokemon, enemy):
-
     while True:
-
-        choice = ''
+        choice = ''  # eliminates the unbound local variable error
         if isinstance(pokemon, Charizard):
             choice = input("\nPlease select a move (bulk up, tackle, flamethrower, or rest) ").lower()
         if isinstance(pokemon, Blastoise):
@@ -218,6 +267,8 @@ def pokemonMove(pokemon, enemy):
         if isinstance(pokemon, Venusaur):
             choice = input("\nPlease select a move (bulk up, tackle, leaf storm, or rest) ").lower()
 
+        # all the conditional statements below just go into the respective methods depending on what move the user
+        # chooses
         if choice == 'bulk up':
             pokemon.bulkUp()
         elif choice == 'rest':
@@ -232,42 +283,57 @@ def pokemonMove(pokemon, enemy):
             pokemon.leafStorm(enemy)
         else:
             print("That's not a move...")
-            continue
-        if enemy.health > 0:
+            continue  # prevents the loop from breaking
+        if enemy.health > 0:  # only shows the animation if the enemy is still 'alive'
             pokemon.draw_health(enemy)
         break
 
 
+'''
+this function chooses the enemy's move, and also incorporates intelligent computer guessing
+'''
 def enemyMove(pokemon, enemy):
     choice = ''
+    C = ["bulk up", "rest", "flamethrower", "tackle"]
+    S = ["bulk up", "rest", "hydro pump", "tackle"]
+    B = ["bulk up", "rest", "leaf storm", "tackle"]
+    # above are the default move sets.
+
+    if enemy.health < 30:  # if the enemy is less than 30 hp, rest will be added once more to the list of moves
+        for i in range(0,1):
+            C.append("rest")
+            S.append("rest")
+            B.append("rest")
+
+    # for the following conditions, if the enemy has a type advantage, they use use their type move more often,
+    # and if they have a type disadvantage, they will use tackle more often
     if isinstance(enemy, Charizard):
-        if enemy.health < 30:
-            C = ["bulk up", "rest", "rest", "rest", "rest", "flamethrower", "tackle"]
-        elif isinstance(pokemon, Venusaur):
-            C = ["bulk up", "rest", "flamethrower","flamethrower","flamethrower", "tackle"]
-        else:
-            C = ["bulk up", "rest", "flamethrower", "tackle"]
+        if isinstance(pokemon, Venusaur):
+            C = ["bulk up", "rest", "flamethrower","flamethrower", "tackle"]
+        if isinstance(pokemon, Blastoise):
+            C = ["bulk up", "rest","flamethrower", "tackle", "tackle"]
+
         choice = random.choice(C)
+
     if isinstance(enemy, Blastoise):
-        if enemy.health < 30:
-            S = ["bulk up", "rest", "rest", "rest", "rest", "flamethrower", "tackle"]
-        elif isinstance(pokemon, Charizard):
-            S = ["bulk up", "rest", "hydro pump","hydro pump","hydro pump", "tackle"]
-        else:
-            S = ["bulk up", "rest", "hydro pump", "tackle"]
+        if isinstance(pokemon, Charizard):
+            S = ["bulk up", "rest", "hydro pump","hydro pump", "tackle"]
+        if isinstance(pokemon, Venusaur):
+            S = ["bulk up", "rest", "hydro pump", "tackle", "tackle"]
+
         choice = random.choice(S)
+
     if isinstance(enemy, Venusaur):
-        if enemy.health < 30:
-            B = ["bulk up", "rest", "rest", "rest", "rest", "leaf storm", "tackle"]
-        elif isinstance(pokemon, Blastoise):
-            B = ["bulk up", "rest", "leaf storm","leaf storm","leaf storm", "tackle"]
-        else:
-            B = ["bulk up", "rest", "leaf storm", "tackle"]
+        if isinstance(pokemon, Blastoise):
+            B = ["bulk up", "rest", "leaf storm","leaf storm", "tackle"]
+        if isinstance(pokemon, Charizard):
+            B = ["bulk up", "rest","leaf storm", "tackle", "tackle"]
 
         choice = random.choice(B)
 
     print("\nYoungster Joey used {0}!".format(choice))
 
+    # this is the same as when the user goes in, only it is the enemy attacking the user.
     if choice == 'bulk up':
         enemy.bulkUp()
     if choice == 'rest':
@@ -283,7 +349,10 @@ def enemyMove(pokemon, enemy):
     if pokemon.health > 0:
         enemy.draw_health(pokemon)
 
-
+'''
+the following two functions turn the strings of pokemon and enemy into iterable class names. the last
+attribute inside the pokemon def is false because that indicates they are not an enemy. vise versa for enemy
+'''
 def chooserPokemon(pokemon):
     if pokemon == "Charizard":
         return Charizard(100, 4, 20, False)
@@ -293,7 +362,7 @@ def chooserPokemon(pokemon):
         return Venusaur(100, 6, 10, False)
 
 
-def chooserEnemy(enemy):
+def chooserEnemy(enemy): # may not be needed
     if enemy == "Charizard":
         return Charizard(100, 4, 20, True)
     if enemy == "Blastoise":
@@ -301,31 +370,43 @@ def chooserEnemy(enemy):
     if enemy == "Venusaur":
         return Venusaur(100, 6, 10, True)
 
-
-def displayScores(pokemon, enemy):  #how to display normal names?
+'''
+I decided to make a definition to display the health and defense because I do it every time after the user/enemy
+goes, so this is more efficient than just repeating it several times
+'''
+def displayScores(pokemon, enemy):
     print("\nUSER\nHealth:", pokemon.health, "\nDefense:", pokemon.defense)
     print("\nYOUNGSTER JOEY\nHealth:", enemy.health, "\nDefense:", enemy.defense)
 
-
+'''
+the main function that call on every other function. this function runs while both the enemy and user have health
+greater than 0. depending on which pokemon is faster, it allows then to go first. after the loop is broken, it
+shows who won and offers the user to play again.
+'''
 def battle(pokemon, enemy):
-    print("\nYoungster Joey challenges you! His pokemon is", enemy)
+    # the code below changes the strings of the pokemon and user into objects and then prints the description of both
     pokemon = chooserPokemon(pokemon)
     des = pokemon.description
     print(des)
+    print("\nYoungster Joey challenges you! His pokemon is", enemy)
     enemy = chooserEnemy(enemy)
+    des2 = enemy.description
+    print(des2)
+
     while pokemon.health > 0 and enemy.health > 0:
 
-        if pokemon.speed >= enemy.speed:
+        if pokemon.speed >= enemy.speed:  # pokemon will go first
             pokemonMove(pokemon, enemy)
-            if enemy.health <= 0:
+            if enemy.health <= 0:  # if this move kills the enemy, the loop will break
                 break
             displayScores(pokemon, enemy)
             enemyMove(pokemon, enemy)
-            if pokemon.health <= 0:
+            if pokemon.health <= 0:  # if this move kills the player, the loop will break
                 break
             displayScores(pokemon, enemy)
+            # scores display after every move
 
-        else:
+        else:  # same as above, just the enemy goes first
             enemyMove(pokemon, enemy)
             if pokemon.health <= 0:
                 break
@@ -346,16 +427,21 @@ def battle(pokemon, enemy):
     again = input("\nPlay again? (y for yes) ").lower()
     if again != 'y':
         print("\nThank you for playing pokemon!!!")
-        exit()
+        exit()  # exits the program
+    # otherwise, the loop below will continue running
 
+'''
+#######################################################
+####################---Main Code---####################
+#######################################################
+'''
 
-# code begins here
-starters = ["Charizard", "Blastoise", "Venusaur"]
-enemy = random.choice(starters)
+starters = ["Charizard", "Blastoise", "Venusaur"] # charizard () here? how to print out?
+enemy = random.choice(starters)  # enemy pokemon is random
 
 while True:
     pokemon = str(input("\nPlease choose your pokemon (Charizard, Venusaur, or Blastoise) ")).title()
     if pokemon == 'Charizard' or pokemon == 'Venusaur'or pokemon == 'Blastoise':
-        battle(pokemon, enemy)
-    else:
+        battle(pokemon, enemy)  # enter the main def
+    else:  # defensive coding
         print("\nThis is 1st Generation pokemon. C'mon Mr. Stubbs you should know this...")
