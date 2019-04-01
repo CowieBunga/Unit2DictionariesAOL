@@ -1,6 +1,3 @@
-# exit error
-# way to print object as string
-
 # IMPORTANT NOTE: THIS GAME IS INTENDED TO BE PLAYED FULL SCREEN
 import random
 import pygame
@@ -9,6 +6,7 @@ import pygame
 ####################---Classes---######################
 #######################################################
 '''
+
 '''
 this is the main class that all the other classes inherit. It includes all the moves that each pokemon has except for 
 the type moves.
@@ -143,6 +141,8 @@ class Sprite:
 
             pygame.display.flip()  # Make the most recently drawn screen visible.
         pygame.quit()  # needed syntax for a smooth shut down
+
+
 '''
 this class inherits the Sprite class, so it receives all of the methods above. the only thing unique about all
 the rest of the classes are the type moves (flamethrower, leaf storm, and hydro pump). note that I won't be
@@ -156,8 +156,6 @@ class Charizard(Sprite):
         self.defense = defense
         self.speed = speed
         self.picture = pygame.image.load('charizard.bmp.png')  # loads image
-        self.description = "\nCharizard is the second fastest and the second bulkiest pokemon" \
-                           "\nFlamethrower does the second most damage of all the type-moves"
         # description above displays after the user chooses pokemon.
 
         # conditional statement below scales picture depending on if it an enemy or user
@@ -165,6 +163,13 @@ class Charizard(Sprite):
             self.picture = pygame.transform.scale(self.picture, (200, 200))
         else:
             self.picture = pygame.transform.scale(self.picture, (300, 300))
+
+    '''
+    this method was used because so that descriptions of the pokemon can be printed out
+    '''
+    def __str__(self):
+        return "Charizard\n\nCharizard is the second fastest and the second bulkiest pokemon" \
+                           "\nFlamethrower does the second most damage of all the type-moves"
 
     '''
     this method is the same in all the rest of the classes. the only things that change are the effectiveness
@@ -200,14 +205,15 @@ class Blastoise(Sprite):
         self.speed = speed
         self.defense = defense
         self.picture = pygame.image.load('blastoise.png')
-        self.description = "\nBlastoise is the fastest pokemon, but the least bulky." \
-                           "\nHydro Pump does the least damage of all the type-moves"
 
         if self.isEnemy:
             self.picture = pygame.transform.scale(self.picture, (200, 200))
         else:
             self.picture = pygame.transform.scale(self.picture, (300, 300))
 
+    def __str__(self):
+        return "Blastoise\n\nBlastoise is the fastest pokemon, but the least bulky." \
+                           "\nHydro Pump does the least damage of all the type-moves"
 
     def hydroPump(self, type):
         damage = ''
@@ -228,6 +234,7 @@ class Blastoise(Sprite):
             net = damage - type.defense
         print("\nThe attack hit with", damage, "damage, but defended by", type.defense, "points, netting", net, "damage")
 
+
 '''
 again, virtually the same as before. 
 '''
@@ -237,13 +244,15 @@ class Venusaur(Sprite):
         self.speed = speed
         self.defense = defense
         self.picture = pygame.image.load('venusaur.png')
-        self.description = "\nVenusaur is the slowest pokemon, but the most bulky." \
-                           "\nLeaf Storm does the most damage of all the type-moves"
 
         if self.isEnemy:
             self.picture = pygame.transform.scale(self.picture, (200, 200))
         else:
             self.picture = pygame.transform.scale(self.picture, (300, 300))
+
+    def __str__(self):
+        return "Venusaur\n\nVenusaur is the slowest pokemon, but the most bulky." \
+                           "\nLeaf Storm does the most damage of all the type-moves"
 
     def leafStorm(self, type):
         damage = ''
@@ -287,8 +296,10 @@ def pokemonMove(pokemon, enemy):
         # chooses
         if choice == 'bulk up':
             pokemon.bulkUp()
+            break  # no need to open pygame
         elif choice == 'rest':
             pokemon.rest()
+            break  # no need to open pygame
         elif choice == 'tackle':
             pokemon.tackle(enemy)
         elif choice == 'flamethrower':
@@ -315,8 +326,8 @@ def enemyMove(pokemon, enemy):
     B = ["bulk up", "rest", "leaf storm", "tackle"]
     # above are the default move sets.
 
-    if enemy.health < 30:  # if the enemy is less than 30 hp, rest will be added once more to the list of moves
-        for i in range(0,1):
+    if enemy.health < 30:  # if the enemy is less than 30 hp, rest will be added twice more to the list of moves
+        for i in range(0,2):
             C.append("rest")
             S.append("rest")
             B.append("rest")
@@ -349,22 +360,25 @@ def enemyMove(pokemon, enemy):
 
     print("\nYoungster Joey used {0}!".format(choice))
 
-    # this is the same as when the user goes in, only it is the enemy attacking the user.
-    if choice == 'bulk up':
-        enemy.bulkUp()
-    if choice == 'rest':
-        enemy.rest()
-    if choice == 'tackle':
-        enemy.tackle(pokemon)
-    if choice == 'flamethrower':
-        enemy.flamethrower(pokemon)
-    if choice == 'hydro pump':
-        enemy.hydroPump(pokemon)
-    if choice == 'leaf storm':
-        enemy.leafStorm(pokemon)
-    if pokemon.health > 0:
-        enemy.animations(pokemon)
-
+    while True:
+        # this is the same as when the user goes in, only it is the enemy attacking the user.
+        if choice == 'bulk up':
+            enemy.bulkUp()
+            break  # no need to open pygame
+        if choice == 'rest':
+            enemy.rest()
+            break  # no need to open pygame
+        if choice == 'tackle':
+            enemy.tackle(pokemon)
+        if choice == 'flamethrower':
+            enemy.flamethrower(pokemon)
+        if choice == 'hydro pump':
+            enemy.hydroPump(pokemon)
+        if choice == 'leaf storm':
+            enemy.leafStorm(pokemon)
+        if pokemon.health > 0:
+            enemy.animations(pokemon)
+        break
 '''
 the following two functions turn the strings of pokemon and enemy into iterable class names. the last
 attribute inside the pokemon def is false because that indicates they are not an enemy. vise versa for enemy
@@ -376,15 +390,6 @@ def chooserPokemon(pokemon):
         return Blastoise(100, 5, 30, False)
     if pokemon == "Venusaur":
         return Venusaur(100, 6, 10, False)
-
-
-def chooserEnemy(enemy): # may not be needed
-    if enemy == "Charizard":
-        return Charizard(100, 4, 20, True)
-    if enemy == "Blastoise":
-        return Blastoise(100, 5, 30, True)
-    if enemy == "Venusaur":
-        return Venusaur(100, 6, 10, True)
 
 '''
 I decided to make a definition to display the health and defense because I do it every time after the user/enemy
@@ -402,12 +407,8 @@ shows who won and offers the user to play again.
 def battle(pokemon, enemy):
     # the code below changes the strings of the pokemon and user into objects and then prints the description of both
     pokemon = chooserPokemon(pokemon)
-    des = pokemon.description
-    print(des)
+    print("\nYou chose", pokemon)
     print("\nYoungster Joey challenges you! His pokemon is", enemy)
-    enemy = chooserEnemy(enemy)
-    des2 = enemy.description
-    print(des2)
 
     while pokemon.health > 0 and enemy.health > 0:
 
@@ -443,7 +444,8 @@ def battle(pokemon, enemy):
     again = input("\nPlay again? (y for yes) ").lower()
     if again != 'y':
         print("\nThank you for playing pokemon!!!")
-        exit()  # exits the program ERROR?
+        exit()  # exits the program
+        # sometimes gives me error libpng warning?
     # otherwise, the loop below will continue running
 
 '''
@@ -452,10 +454,10 @@ def battle(pokemon, enemy):
 #######################################################
 '''
 
-starters = ["Charizard", "Blastoise", "Venusaur"] # charizard () here? how to print out?
-enemy = random.choice(starters)  # enemy pokemon is random
-
 while True:
+    starters = [Charizard(100, 4, 20, True), Blastoise(100, 5, 30, True), Venusaur(100, 6, 10, True)]  # in while loop
+    # for reset
+    enemy = random.choice(starters)  # enemy pokemon is random
     pokemon = str(input("\nPlease choose your pokemon (Charizard, Venusaur, or Blastoise) ")).title()
     if pokemon == 'Charizard' or pokemon == 'Venusaur'or pokemon == 'Blastoise':
         battle(pokemon, enemy)  # enter the main def
